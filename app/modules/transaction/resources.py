@@ -17,7 +17,12 @@ transaction_response = api.model('Transaction', {
     'amount': fields.Float(description='Сумма'),
     'commission': fields.Float(description='Комиссия'),
     'status': fields.String(description='Статус транзакции'),
+    'created_at': fields.String(description='Время создания'),
     'user_id': fields.Integer(description='ID пользователя')
+})
+
+cancel_transaction_request = api.model('CancelTransaction', {
+    'transaction_id': fields.Integer(description='ID транзакции', required=True)
 })
 
 
@@ -67,13 +72,9 @@ class CreateTransaction(Resource):
             'amount': new_transaction.amount,
             'commission': new_transaction.commission,
             'status': new_transaction.status,
+            'created_at': str(new_transaction.created_at),
             'user_id': new_transaction.user_id
         }, 201
-
-
-cancel_transaction_request = api.model('CancelTransaction', {
-    'transaction_id': fields.Integer(description='ID транзакции', required=True)
-})
 
 
 @api.route('/cancel_transaction')
@@ -103,3 +104,22 @@ class CancelTransaction(Resource):
 
         return {'message': f'Транзакция {transaction_id} успешно отменена'}, 200
 
+
+@api.route('/check_transaction/<int:transaction_id>')
+class CheckTransaction(Resource):
+    @api.response(200, 'Информация о транзакции', model=transaction_response)
+    @api.response(404, 'Транзакция не найдена')
+    def get(self, transaction_id):
+        transaction = Transaction.query.get(transaction_id)
+
+        if not transaction:
+            return {'error': 'Транзакция с указанным ID не найдена'}, 404
+
+        return {
+            'id': transaction.id,
+            'amount': transaction.amount,
+            'commission': transaction.commission,
+            'status': transaction.status,
+            'created_at': str(transaction.created_at),
+            'user_id': transaction.user_id
+        }, 200
