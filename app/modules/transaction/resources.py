@@ -23,7 +23,7 @@ transaction_response = api.model('Transaction', {
 
 @api.route('/create_transaction')
 class CreateTransaction(Resource):
-    @api.expect(transaction_request)
+    @api.expect(transaction_request, validate=True)
     @api.response(201, 'Транзакция успешно создана', model=transaction_response)
     @api.response(400, 'Неверные входные данные')
     @api.response(404, 'Пользователь не найден')
@@ -69,3 +69,37 @@ class CreateTransaction(Resource):
             'status': new_transaction.status,
             'user_id': new_transaction.user_id
         }, 201
+
+
+cancel_transaction_request = api.model('CancelTransaction', {
+    'transaction_id': fields.Integer(description='ID транзакции', required=True)
+})
+
+
+@api.route('/cancel_transaction')
+class CancelTransaction(Resource):
+    @api.expect(cancel_transaction_request, validate=True)
+    @api.response(200, 'Транзакция успешно отменена')
+    @api.response(404, 'Транзакция не найдена')
+    @api.response(400, 'Транзакцию нельзя отменить')
+    def post(self):
+        data = request.json
+        transaction_id = data.get('transaction_id')
+        transaction = Transaction.query.get(transaction_id)
+
+        if not transaction:
+            return {'error': 'Транзакция с указанным ID не найдена'}, 404
+
+        if transaction.status != 'waiting':
+            return {'error': 'Транзакцию можно отменить только в статусе "waiting"'}, 400
+
+        transaction.status = 'canceled'
+
+        try:
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            return {'error': str(e)}, 500
+
+        return {'message': f'Транзакция {transaction_id} успешно отменена'}, 200
+
