@@ -1,15 +1,12 @@
-from flask import current_app
+from flask_swagger_ui import get_swaggerui_blueprint
 
-
-def serve_swaggerui_assets(path):
-    if not current_app.debug:
-        import warnings
-        warnings.warn(
-            "/swaggerui/ is recommended to be served by public-facing server (e.g. NGINX)"
-        )
-    from flask import send_from_directory
-    return send_from_directory('../static/', path)
+SWAGGER_URL = '/swagger'
+API_URL = '/api/v1/swagger.json'
+swaggerui_blueprint = get_swaggerui_blueprint(
+    SWAGGER_URL,
+    API_URL
+)
 
 
 def init_app(app, **kwargs):
-    app.route('/swaggerui/<path:path>')(serve_swaggerui_assets)
+    app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)

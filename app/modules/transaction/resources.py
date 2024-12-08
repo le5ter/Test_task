@@ -5,7 +5,7 @@ from app.extensions import db
 from app.models import User, Transaction
 
 
-api = Namespace('transactions', description='Операции с транзакциями')
+api = Namespace('transactions', description='Операции с транзакциями', path="/")
 
 transaction_request = api.model('CreateTransaction', {
     'user_id': fields.Integer(description='ID пользователя (необязательно)', required=False),

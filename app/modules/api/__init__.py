@@ -3,8 +3,9 @@ from flask_restx import Api
 
 api_v1 = Api(
     version='1.0',
-    title="Flask-RESTplus Example API",
-    description=("RESTful API for Test task", )
+    title="Flask-RESTplus Test Task API",
+    description=("RESTful API for Test task", ),
+    doc="/swagger"
 )
 
 
