@@ -1,28 +1,17 @@
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
-from sqlalchemy.orm import DeclarativeBase
 
 from config import Config
-
-
-class Base(DeclarativeBase):
-    pass
-
-
-db = SQLAlchemy(model_class=Base)
-migrate = Migrate()
+from .extensions import db
 
 
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
 
-    db.init_app(app)
-    migrate.init_app(app, db)
+    from . import extensions
+    extensions.init_app(app)
 
-    with app.app_context():
-        from . import routes
-        db.create_all()
+    from . import modules
+    modules.init_app(app)
 
     return app
