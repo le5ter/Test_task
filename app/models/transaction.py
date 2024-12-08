@@ -19,6 +19,7 @@ class Transaction(db.Model):
         ('waiting', 'Waiting'),
         ('confirmed', 'Confirmed'),
         ('cancelled', 'Cancelled'),
+        ('expired', 'Expired')
     ]
 
     def __repr__(self):

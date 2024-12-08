@@ -1,11 +1,11 @@
 from .flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy()
 
-from . import api # noqa
+from . import api, celery # noqa
 
 
 def init_app(app):
-    for extension in (db, api):
+    for extension in (db, api, celery):
         extension.init_app(app)
 
     with app.app_context():
