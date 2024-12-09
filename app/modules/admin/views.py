@@ -41,9 +41,9 @@ class DashboardView(SecureDashboardView):
         if not current_user.is_admin():
             return redirect(url_for('index'))  # Ограничиваем доступ для обычных пользователей
 
-        user_count = db.session.query(func.count(User.id)).scalar()
-        transaction_count = db.session.query(func.count(Transaction.id)).scalar()
-        today_transactions = (
+        users_count = db.session.query(func.count(User.id)).scalar()
+        transactions_count = db.session.query(func.count(Transaction.id)).scalar()
+        total_sum = (
                 db.session.query(func.sum(Transaction.amount))
                 .filter(func.date(Transaction.created_at) == date.today())
                 .scalar() or 0.0
@@ -53,9 +53,9 @@ class DashboardView(SecureDashboardView):
 
         return self.render(
             'admin/dashboard.html',
-            user_count=user_count,
-            transaction_count=transaction_count,
-            today_transactions=today_transactions,
+            users_count=users_count,
+            transactions_count=transactions_count,
+            total_sum=total_sum,
             recent_transactions=recent_transactions
         )
 
