@@ -32,6 +32,7 @@
     <thead>
     <tr>
         <th>ID</th>
+        <th>ID Пользователя</th>
         <th>Сумма</th>
         <th>Комиссия</th>
         <th>Статус</th>
@@ -42,6 +43,7 @@
     {% for transaction in recent_transactions %}
     <tr>
         <td>{{ transaction.id }}</td>
+        <td>{{ transaction.user.id }}</td>
         <td>{{ transaction.amount }}</td>
         <td>{{ transaction.commission }}</td>
         <td>{{ transaction.status }}</td>
