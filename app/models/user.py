@@ -1,8 +1,15 @@
+from tronpy import Tron
 from sqlalchemy.orm import relationship
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from app.extensions import db
+
+
+def generate_trc20_wallet():
+    client = Tron(network="shasta")
+    wallet = client.generate_address()
+    return wallet['base58check_address']
 
 
 class User(db.Model, UserMixin):
@@ -15,6 +22,7 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(80), unique=True, nullable=True)  # должно быть поле username
     password = db.Column(db.String(120), nullable=True)
     role = db.Column(db.String(20), nullable=True, default='user')  # 'admin', 'user'
+    usdt_public_key = db.Column(db.String(255), nullable=True, default=generate_trc20_wallet)
 
     transactions = relationship('Transaction', backref='user', cascade="all, delete-orphan")
 
